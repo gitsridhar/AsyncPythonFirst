@@ -14,9 +14,9 @@ def measure_sync(fn: Callable[[], object]) -> float:
     return time.perf_counter() - started
 
 
-def measure_async() -> float:
+def measure_async(concurrency_limit: int = 40) -> float:
     started = time.perf_counter()
-    asyncio.run(run_async())
+    asyncio.run(run_async(concurrency_limit=concurrency_limit))
     return time.perf_counter() - started
 
 
@@ -48,7 +48,7 @@ def main(rounds: int = 8, thread_workers: int = 8, async_limit: int = 40) -> Non
 
     for round_no in range(1, rounds + 1):
         t_time = measure_sync(lambda: run_threaded(max_workers=thread_workers))
-        a_time = measure_sync(lambda: asyncio.run(run_async(concurrency_limit=async_limit)))
+        a_time = measure_async(concurrency_limit=async_limit)
 
         threaded_samples.append(t_time)
         async_samples.append(a_time)
